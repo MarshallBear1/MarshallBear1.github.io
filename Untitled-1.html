@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gene Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        #main-header {
+    color: orange;
+    padding: 10px;
+    text-align: center;
+    background-color: white; /* remove the blue background */
+}
+
+#searchSection label {
+    display: block;
+    margin: 0 auto; /* center the labels */
+    width: fit-content; /* prevent labels from stretching across the screen */
+    margin-bottom: 5px;
+}
+
+        #searchSection {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+      
+        #searchSection input, #searchSection select {
+    width: 50%; /* adjust as per your need */
+    height: 25px;
+    padding: 5px;
+    margin: 0 auto; /* center the input and select boxes */
+    margin-bottom: 10px;
+    display: block; /* this makes margin: 0 auto; effective */
+}
+
+
+        #submitBtn {
+            display: block;
+            width: 100px;
+            height: 35px;
+            background: cornflowerblue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: auto;
+        }
+
+        #submitBtn:hover {
+            background: #2B547E;
+            cursor: pointer;
+        }
+
+        #geneList {
+            background: white;
+            padding: 20px;
+            list-style: none;
+        }
+        #main-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#logo img {
+    max-width: 200px; /* Change this value as needed */
+    margin-bottom: 10px;
+}
+
+
+        #geneList li {
+            border-bottom: #f4f4f4 solid 1px;
+            padding: 10px;
+        }
+
+        .info {
+    color: blue;
+    cursor: help;
+    position: relative;
+}
+
+.info[data-tooltip]:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -50%;
+    margin-bottom: 10px;
+    padding: 7px;
+    border-radius: 5px;
+    background: #333;
+    color: #fff;
+    font-size: 12px;
+    line-height: 14px;
+    z-index: 99;
+    box-sizing: border-box;
+    width: 200px;
+    text-align: center;
+}
+
+/* Style the buttons that are used to open and close the collapsible content */
+.collapsible {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+    background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+
+
+#geneList li {
+    cursor: pointer;
+    color: black; /* or another color of your choice */
+    text-decoration: underline;
+}
+#geneList li:hover {
+    color: darkblue; /* or another color of your choice */
+}
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+ 
+
+    <header id="main-header">
+        <div id="logo">
+           <img src="data:image/png;base64,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" alt="Your Logo">
+        </div>
+        <h1>lncRNA Finder</h1>
+    </header>
+    
+        
+        <section id="searchSection">
+
+            <label for="searchInput">Search for phenotypes</label>
+
+            <input type="text" id="searchInput" placeholder="Enter phenotype here...">
+
+            <label for="SenseSelect">Sense</label>
+            <select id="SenseSelect">
+                <option value="">Show all</option>
+                <option value="Sense">Sense</option>
+                <option value="antisense">Antisense</option>
+            </select>
+
+            <label for="geneLengthSelect">Gene Length</label>
+            <select id="geneLengthSelect">
+                <option value="">Show all</option>
+                <option value="200-2000">200-2000</option>
+                <option value="2001-5000">2001-5000</option>
+                <option value="5001-100000">5001-100000</option>
+                <option value="100000+">100000+</option>
+            </select>
+
+            <label for="pseudogeneSelect">Pseudogene</label>
+            <select id="pseudogeneSelect">
+                <option value="">Show all</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="giftScoreInput">
+                Gift Score 
+                <span class="info" data-tooltip="The GIFtS algorithm uses the wealth of GeneCards annotations to produce scores aimed at predicting the degree of a gene's functionality. Since the degree of known functionality is correlated with the amount of research done on a particular gene or its product, we use these annotations in a scoring system aimed at inferring functionality.">(i)</span>
+            </label>
+            <input type="text" id="giftScoreInput" placeholder="Enter gift score here...">
+            
+
+
+            <label for="circRNASelect">CircRNA</label>
+            <select id="circRNASelect">
+                <option value="">Show all</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+
+
+
+            <label for="chromosomeInput">Chromosome</label>
+            <input type="text" id="chromosomeInput" placeholder="Enter chromosome number here...">
+
+            <label for="peSelect">
+                PE
+                <span class="info" data-tooltip="Protein Existance Level. PE1>PE2>...PE5">(i)</span>
+            </label>
+               
+            <select id="peSelect">
+                <option value="">Show all</option>
+                <option value="PE1">PE1</option>
+                <option value="PE2">PE2</option>
+                <option value="PE3">PE3</option>
+                <option value="PE4">PE4</option>
+                <option value="PE5">PE5</option>
+                <option value="N/A">N/A</option>
+                <!-- Add more PE numbers as options -->
+            </select>
+
+            <label>Divergent: <input type="checkbox" id="divergentCheckbox"></label>
+<label>Overlapping: <input type="checkbox" id="overlappingCheckbox"></label>
+<label>Intronic: <input type="checkbox" id="intronicCheckbox"></label>
+<label>Open reading frame: <input type="checkbox" id="openReadingFrameCheckbox"></label>
+<label>Long Intergenic/Intergenic/LINC: <input type="checkbox" id="longIntergenicCheckbox"></label>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function() {
+    const divergent = document.getElementById('divergentCheckbox').checked ? "Yes" : "No";
+    const overlapping = document.getElementById('overlappingCheckbox').checked ? "Yes" : "No";
+    const intronic = document.getElementById('intronicCheckbox').checked ? "Yes" : "No";
+    const openReadingFrame = document.getElementById('openReadingFrameCheckbox').checked ? "Yes" : "No";
+    const longIntergenic = document.getElementById('longIntergenicCheckbox').checked ? "Yes" : "No";
+    // ...
+    // continue filtering
+});
+
+</script>
+            
+            <button id="submitBtn">Submit</button>
+        </section>
+
+        <ul id="geneList">
+            <!-- Items will be populated by JavaScript -->
+        </ul>
+        <button id="prevBtn">Previous</button>
+        <button id="nextBtn">Next</button>
+
+
+    </div>
+
+
+    <script>
+        let genes;
+        let phenotypes = [];
+        let filteredGenes = [];
+        let currentPage = 0;
+        const itemsPerPage = 25; // Changed to 25
+
+
+        // Load the data
+        fetch('http://127.0.0.1:5500/genes.json')
+            .then(response => response.json())
+            .then(data => {
+                genes = data;
+
+                // Get a list of unique phenotypes
+                phenotypes = [...new Set(genes.map(gene => gene['Phenotype (GWAS)'] ? gene['Phenotype (GWAS)'] : ''))];
+
+
+                // Initialize the autocomplete dropdown
+                $("#searchInput").autocomplete({
+                    source: phenotypes,
+                    select: function(event, ui) {
+                        event.preventDefault();
+                        $("#searchInput").val(ui.item.value);
+                    }
+                });
+            });
+
+           
+
+            function populateList() {
+    const geneList = document.getElementById('geneList');
+    geneList.innerHTML = '';
+
+    const start = currentPage * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageItems = filteredGenes.slice(start, end);
+
+    if (filteredGenes.length === 0) {
+        geneList.innerHTML = "<li>No results found.</li>";
+    } else {
+        for (let gene of pageItems) {
+            const li = document.createElement('li');
+            li.textContent = gene.symbol;
+            li.setAttribute('data-Sense', gene.Sense);
+            if (gene['Phenotype (GWAS)']) {
+                li.setAttribute('data-phenotype', gene['Phenotype (GWAS)'].toLowerCase());
+            } else {
+                li.setAttribute('data-phenotype', '');
+            }
+            li.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            });
+
+            const div = document.createElement('div');
+            div.setAttribute('class', 'content');
+            div.style.background = 'rgba(255, 165, 0, 0.2)';  // Light orange background with low opacity
+
+            // Generate the link to GeneCards
+            const link = document.createElement('a');
+            link.href = `https://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene.symbol}`;
+            link.textContent = `View ${gene.symbol} on GeneCaRNA`;
+            link.target = '_blank';
+
+          // Append the link at the end
+div.appendChild(link);
+
+geneList.append(li);
+geneList.append(div);
+
+// Create a <br> tag
+const br = document.createElement('br');
+
+// Append the <br> tag after the div
+geneList.append(br);
+
+
+            // Add each property as a new paragraph, except for 'symbol'
+            for (let prop in gene) {
+                if (prop === 'symbol') continue;  // Skip the 'symbol' property
+                
+                const p = document.createElement('p');
+                p.innerHTML = `<b>${prop}:</b> ${gene[prop]}`;  // Property names (headers) in bold
+                div.appendChild(p);
+            }
+
+            // Append the link at the end
+            div.appendChild(link);
+
+            geneList.append(li);
+            geneList.append(div);
+             
+        }
+    }
+
+    document.getElementById('prevBtn').disabled = currentPage === 0;
+    document.getElementById('nextBtn').disabled = end >= filteredGenes.length;
+}
+
+
+// Pagination JS
+document.getElementById('prevBtn').addEventListener('click', function() {
+    if (currentPage > 0) {
+        currentPage--;
+        populateList(filteredGenes);
+    }
+});
+
+document.getElementById('nextBtn').addEventListener('click', function() {
+    if ((currentPage + 1) * itemsPerPage < filteredGenes.length) {
+        currentPage++;
+        populateList(filteredGenes);
+    }
+});
+ 
+
+        document.getElementById('submitBtn').addEventListener('click', function() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const Sense = document.getElementById('SenseSelect').value;
+    const geneLength = document.getElementById('geneLengthSelect').value;
+    const pseudogene = document.getElementById('pseudogeneSelect').value;
+    const giftScore = document.getElementById('giftScoreInput').value;
+    const circRNA = document.getElementById('circRNASelect').value;
+    const chromosome = document.getElementById('chromosomeInput').value;
+    const pe = document.getElementById('peSelect').value;
+
+    
+
+    filteredGenes = genes.filter(gene => 
+        (gene['Phenotype (GWAS)'] && gene['Phenotype (GWAS)'].toLowerCase().includes(input)) &&
+        (Sense === '' || gene.Sense === Sense) &&
+        (geneLength === '' || gene['Gene Length'] === geneLength) &&
+        (pseudogene === '' || gene.Pseudogene === pseudogene) &&
+        (giftScore === '' || gene.giftScore === parseInt(giftScore)) &&
+        (circRNA === '' || gene.CircRNA === circRNA) &&
+        (chromosome === '' || gene.chromosome_Contigs.includes(chromosome)) &&
+        (pe === '' || gene.PE === pe)
+    );
+
+    currentPage = 0;  // Reset current page
+    populateList();
+});
+
+
+const li = document.createElement('li');
+li.textContent = gene.symbol;
+li.style.cursor = 'pointer';
+
+
+        
+    </script>
+</body>
+</html>
