@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Gene Search</title>
+
+    <style>
+
+        /* This is the CSS, the styling of the page, do not spend too much time worrying about this section*/
+
+        /* General styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+    
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+        }
+    
+        /* Header styling */
+        #main-header {
+            color: orange;
+            padding: 10px;
+            text-align: center;
+            background-color: white; 
+        }
+    
+        #main-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+    
+        #logo img {
+            max-width: 200px; 
+            margin-bottom: 10px;
+        }
+    
+        /* Search section styling */
+
+        #searchSection label {
+            display: block;
+            margin: 0 auto; /* center the labels */
+            width: fit-content; /* prevent labels from stretching across the screen */
+            margin-bottom: 5px;
+        }
+    
+        #searchSection {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+    
+        #searchSection input, #searchSection select {
+            width: 50%; 
+            height: 25px;
+            padding: 5px;
+            margin: 0 auto; /* center the input and select boxes */
+            margin-bottom: 25px; /* Increase this value for more space between elements */
+            display: block; /* this makes margin: 0 auto; effective */
+        }
+    
+        /* Submit button styling */
+        #submitBtn {
+            display: block;
+            width: 100px;
+            height: 35px;
+            background: cornflowerblue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: auto;
+        }
+    
+        #submitBtn:hover {
+            background: #2B547E;
+            cursor: pointer;
+        }
+    
+        /* Gene list styling */
+        #geneList {
+            background: white;
+            padding: 20px;
+            list-style: none;
+        }
+    
+        #geneList li {
+            border-bottom: #f4f4f4 solid 1px;
+            padding: 10px;
+        }
+    
+        #geneList li {
+            cursor: pointer;
+            color: black; /* or another color of your choice */
+            text-decoration: underline;
+        }
+    
+        #geneList li:hover {
+            color: darkblue; /* or another color of your choice */
+        }
+    
+        /* Tooltip styling */
+        .info {
+            color: blue;
+            cursor: help;
+            position: relative;
+        }
+    
+        .info[data-tooltip]:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -50%;
+            margin-bottom: 10px;
+            padding: 7px;
+            border-radius: 5px;
+            background: #333;
+            color: #fff;
+            font-size: 12px;
+            line-height: 14px;
+            z-index: 99;
+            box-sizing: border-box;
+            width: 200px;
+            text-align: center;
+        }
+    
+        /* Collapsible button styling */
+
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+    
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+    
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+    
+        /* Coding container styling */
+
+        .coding-container {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+    
+        .coding-selects, .coding-checkboxes, .coding-select-all {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3px; /* Add some space between lines if you need */
+        }
+    
+        .coding-selects .coding-item, .coding-checkboxes .coding-item, .coding-select-all .coding-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            font-size: 12px;
+        }
+    
+        .coding-checkboxes .coding-item input[type="checkbox"], .coding-select-all .coding-item input[type="checkbox"] {
+            width: 12px;
+            height: 2-px;
+            margin-left: 5px;
+        }
+    
+        /* Additional container styling */
+
+        .gift-score-container {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+    
+        .gift-score-flex {
+            display: flex;
+            align-items: center;
+        }
+    
+        #giftScoreInput {
+            flex-grow: 1;
+            margin-right: 10px;
+            width: 100%; 
+        }
+    
+        .gift-score-flex .gift-score-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            font-size: 12px;
+        }
+    
+        .gift-score-flex input[type="text"] {
+            max-width: 25px;
+            margin-left: 5px;
+        }
+    
+        /* Triggs container styling */
+
+        .triggs-container {
+            text-align: center;
+            font-size: 16px;
+        }
+    
+        .triggs-checkboxes label {
+            margin: 1px;
+            font-size: 8px;
+        }
+    
+        .triggs-checkboxes input[type="checkbox"] {
+            width: 8px;
+            height: 8px;
+        }
+    
+       
+
+        .select-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 0 40px;
+            font-size: 14px;
+        }
+    
+        .select-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            box-sizing: border-box;
+        }
+
+    </style>
+    
+
+<!-- These are effectively loading libraries, which change the functionality of the HTML/the way it looks.  -->
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+ 
+<!-- Loading in the logo  -->
+    <header id="main-header">
+        <div id="logo">
+           <img src="data:image/png;base64,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" alt="Your Logo">
+        </div>
+        <h1>lncRNA Finder</h1>
+    </header>
+    
+        
+    <!--The next HTML are the subcategory labels  -->
+        
+            <div class="coding-container">
+                <label for="coding">Coding:</label>
+                <div class="coding-selects" id="coding">
+                    <div class="coding-item">
+                        <br><br>
+
+                        <label for="SenseSelect">Strand:</label>
+                        <select id="SenseSelect">
+                            <option value="">Show all</option>
+                            <option value="Sense">Sense</option>
+                            <option value="antisense">Antisense</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="coding-checkboxes">
+                    <div class="coding-item"><span>Intronic</span><input type="checkbox" id="Intronic"></div>
+                    <div class="coding-item"><span>Divergent</span><input type="checkbox" id="Divergent"></div>
+                    <div class="coding-item"><span>Overlapping</span><input type="checkbox" id="Overlapping"></div>
+                    <div class="coding-item"><span>ORF</span><input type="checkbox" id="OpenReadingFrame"></div>
+                    <div class="coding-item"><span>Intergenic</span><input type="checkbox" id="LongIntergenic"></div>
+                </div>
+
+                <div class="coding-select-all">
+                    <div class="coding-item"><span>Show All Coding</span><input type="checkbox" id="showAllCoding"></div>
+                </div>
+            </div>
+            
+        
+                  <div class="select-container">
+                        <div class="select-item">
+                            <label for="geneLengthSelect">Gene Length</label>
+                            <select id="geneLengthSelect">
+                                <option value="">Show all</option>
+                                <option value="200-2000">200-2000</option>
+                                <option value="2001-5000">2001-5000</option>
+                                <option value="5001-100000">5001-100000</option>
+                                <option value="100000+">100000+</option>
+                            </select>
+                        </div>
+
+                        <div class="select-item">
+                            <label for="pseudogeneSelect">Pseudogene:</label>
+                            <select id="pseudogeneSelect">
+                                <option value="">Show all</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+
+                        <div class="select-item">
+                            <label for="circRNASelect">circRNA:</label>
+                            <select id="circRNASelect">
+                                <option value="">Show all</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+
+                        <div class="select-item">
+                            <label for="triggsSelect">TRIGGS:</label>
+                            <select id="triggsSelect">
+                                <option value="">Show all</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+
+                        <div class="select-item">
+                            <label for="UTRsSelect">UTRs:</label>
+                            <select id="UTRsSelect">
+                                <option value="">Show all</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="select-item">
+                            <label for="chromosomeInput">Chromosome</label>
+                            <input type="text" id="chromosomeInput" placeholder="Enter chromosome number here...">
+                        </div>
+
+                        <div class="select-item">
+                            <label for="peSelect">PE <span class="info" data-tooltip="Protein Existance Level. PE1>PE2>...PE5">(i)</span></label>
+                            <select id="peSelect">
+                                <option value="">Show all</option>
+                                <option value="PE1">PE1</option>
+                                <option value="PE2">PE2</option>
+                                <option value="PE3">PE3</option>
+                                <option value="PE4">PE4</option>
+                                <option value="PE5">PE5</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+                        </div>
+
+                        <div class="select-item">
+                            <label for="giftScoreInput">
+                                Gift Score
+                                <span class="info" data-tooltip="The GIFtS algorithm uses the wealth of GeneCards annotations to produce scores aimed at predicting the degree of a gene's functionality. Since the degree of known functionality is correlated with the amount of research done on a particular gene or its product, we use these annotations in a scoring system aimed at inferring functionality. The deafult range GiFtS range is 1 (min)- 37 (max), but you can select your desired range and press update.">(i)</span>
+                            </label>
+                            <div class="gift-score-flex">
+                                <input type="text" id="giftScoreInput">
+                                <button onclick="updateGiftScoreDisplay()">Update</button>
+                                <output id="giftScoreDisplay" style="display: inline-block;"></output>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <section id="searchSection">
+                        <label for="searchInput">Search for phenotypes</label>
+                        <input type="text" id="searchInput" placeholder="Enter phenotype here...">
+                      
+               
+                <label for="originalSourceId">
+                  OriginalSourceId
+                <span class="info" data-tooltip="You will see the name of the source HGNC #1. The #1 is the relability score we give to the source, based on the GeneCaRNA hierarchical system">(i)</span>
+                </label>
+
+            <br><br>  <!-- This will make a space between the original source ID and the submit button -->
+            
+            <button id="submitBtn">Submit</button>
+        </section>
+
+        <ul id="geneList">
+        </ul>
+        <button id="prevBtn">Previous</button>
+        <button id="nextBtn">Next</button>
+
+    </div>
+
+     <!-- The next is the JS code -->
+
+    <script>
+   
+
+        // Load the data from the JSON file, which has been coverted from the xlsx file.
+
+    fetch('http://127.0.0.1:5500/genes2.json')
+    .then(response => response.json())
+    .then(data => {
+        genes = data;
+
+        // Get a list of unique phenotypes from the JSON
+        phenotypes = [...new Set(genes.map(gene => gene['Phenotype (GWAS)'] ? gene['Phenotype (GWAS)'] : ''))];
+
+        // Initialize the autocomplete dropdown
+        $("#searchInput").autocomplete({
+            source: phenotypes,
+            select: function(event, ui) {
+                event.preventDefault();
+                $("#searchInput").val(ui.item.value);
+            }
+        });
+    });
+
+    // The next code will be for the pagination, the 'next and previous buttons'
+   
+    let genes;
+        let phenotypes = [];
+        let filteredGenes = [];
+        let currentPage = 0;
+        const itemsPerPage = 25; // This can be changed if you want more or less genes per page
+
+    // Pagination JS
+document.getElementById('prevBtn').addEventListener('click', function() {
+    if (currentPage > 0) {
+        currentPage--;
+        populateList(filteredGenes);
+    }
+});
+
+document.getElementById('nextBtn').addEventListener('click', function() {
+    if ((currentPage + 1) * itemsPerPage < filteredGenes.length) {
+        currentPage++;
+        populateList(filteredGenes);
+    }
+});
+ 
+    
+    function populateList() {
+        const geneList = document.getElementById('geneList');
+            geneList.innerHTML = '';
+
+        const start = currentPage * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = filteredGenes.slice(start, end);
+
+    if (filteredGenes.length === 0) {
+        geneList.innerHTML = "<li>No results found.</li>"; // if there are no results for the users search request
+    } else {
+        for (let gene of pageItems) {
+            const li = document.createElement('li');
+            li.textContent = gene.symbol;
+            li.setAttribute('data-Sense', gene.Sense);
+            if (gene['Phenotype (GWAS)']) {
+                li.setAttribute('data-phenotype', gene['Phenotype (GWAS)'].toLowerCase()); // code to enable to user to be able to search for GWAS through a search bar
+            } else {
+                li.setAttribute('data-phenotype', '');
+            }
+            li.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            });
+
+            const div = document.createElement('div');
+            div.setAttribute('class', 'content');
+            div.style.background = 'rgba(255, 165, 0, 0.2)';  // The minicard output background colour which is a light orange colour
+
+            // Generate the link to GeneCarNA
+            const link = document.createElement('a');
+            link.href = `https://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene.symbol}`;
+            link.textContent = `View ${gene.symbol} on GeneCaRNA`;
+            link.target = '_blank';
+
+      
+        // Create a <br> tag between each gene 
+        const br = document.createElement('br');
+        // Append the <br> tag after the div
+        geneList.append(br);
+
+   
+        //The code which takes the original source ID, and dispalys its rank
+ const sourceIdToNameAndRank = {
+    2: { name: "HGNC", rank: 1 },
+    3: { name: "NCBI Gene", rank: 2 },
+    5: { name: "Ensembl", rank: 3 },
+    72: { name: "RefSeq", rank: 4 },
+    84: { name: "NONCODE", rank: 5 },
+    149: { name: "ENA", rank: 6 },
+    152: { name: "LncBook", rank: 14 },
+    153: { name: "LNCipedia", rank: 15 },
+    
+};
+
+    const table = document.createElement('table');
+    for (let prop in gene) {
+    if (prop === 'symbol' || prop === 'Gene length') continue;  // Skip the 'symbol' and 'Gene Length' properties
+
+    const row = document.createElement('tr');  // Create a new table row
+    const headerCell = document.createElement('th');  // Create a header cell for the property name
+    const valueCell = document.createElement('td');  // Create a standard cell for the property value
+
+    headerCell.textContent = prop;  // Set the text content of the header cell to the property name
+
+    let value = gene[prop];  // Get the property value
+
+    // If the property is 'UTRs', split the value at '||' and take the first item
+    if (prop === 'UTRs') {
+        value = value.split('||')[0];
+    }
+
+    // If the property is 'originalSourceId', replace it with the source name and rank
+    if (prop === 'originalSourceId') {
+        const sourceInfo = sourceIdToNameAndRank[value];
+        if (sourceInfo) {
+            value = `${sourceInfo.name} #${sourceInfo.rank}`;
+            headerCell.title = "This number refers to the rank of the source in terms of its credibility.";
+        }
+    }
+
+    valueCell.textContent = value;  // Set the text content of the standard cell to the property value
+
+    // Set the text color based on the cell value
+    if (value === 'Yes') {
+        valueCell.style.color = 'green';
+    } else if (value === 'No') {
+        valueCell.style.color = 'red';
+    }
+
+    row.appendChild(headerCell);  // Append the header cell to the row
+    row.appendChild(valueCell);  // Append the standard cell to the row
+
+    table.appendChild(row);  // Append the row to the table
+}
+    div.appendChild(table);  // Append the table to the div 
+
+
+            
+         // Append the  GeneCaRNA link at the end
+    
+            div.appendChild(link);
+            geneList.append(li);
+            geneList.append(div);
+             
+        }
+    }
+
+    document.getElementById('prevBtn').disabled = currentPage === 0;
+    document.getElementById('nextBtn').disabled = end >= filteredGenes.length;
+}
+
+//code that allows the categories to be selected 
+//const input = ...: Gets the value of the input element with ID, and stores it in the input variable.
+        document.getElementById('submitBtn').addEventListener('click', function() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const Sense = document.getElementById('SenseSelect').value;
+    const geneLength = document.getElementById('geneLengthSelect').value;
+    const pseudogene = document.getElementById('pseudogeneSelect').value;
+    const giftScore = document.getElementById('giftScoreInput').value;
+    const circRNA = document.getElementById('circRNASelect').value;
+    const chromosome = document.getElementById('chromosomeInput').value;
+    const pe = document.getElementById('peSelect').value;
+    const triggs = document.getElementById('triggsSelect').value;
+    const UTRs = document.getElementById('UTRsSelect').value;
+
+    const Divergent = document.getElementById('Divergent').checked;
+    const Overlapping = document.getElementById('Overlapping').checked;
+    const Intronic = document.getElementById('Intronic').checked;
+    const OpenReadingFrame = document.getElementById('OpenReadingFrame').checked;
+    const LongIntergenic = document.getElementById('LongIntergenic').checked;
+    const showAllCoding = document.getElementById('showAllCoding').checked;
+
+// Then use these values to filter your JSON data.
+//notice how for UTR the code is different, and this is the case since it is saying if the code doesn't say know, assume it is YES
+//this is because the text in the JSON doesn't say YES, it just says its binding properly.
+    filteredGenes = genes.filter(gene => 
+    (gene['Phenotype (GWAS)'] && gene['Phenotype (GWAS)'].toLowerCase().includes(input)) &&
+    (Sense === '' || gene.Sense === Sense) &&
+    (geneLength === '' || gene['Gene Length'] === geneLength) &&
+    (pseudogene === '' || gene.Pseudogene === pseudogene) &&
+    (giftScore === '' || gene.giftScore === parseInt(giftScore)) &&
+    (circRNA === '' || gene.CircRNA === circRNA) &&
+    (chromosome === '' || gene.chromosome_Contigs === chromosome) &&
+    (pe === '' || gene.PE === pe) &&
+    (triggs === '' || gene.TRIGGS === triggs) &&
+    (Divergent ? gene.Divergent === 'Yes' : true) &&
+    (Overlapping ? gene.Overlapping === 'Yes' : true) &&
+    (Intronic ? gene.Intronic === 'Yes' : true) &&
+    (OpenReadingFrame ? gene['Open reading frame'] === 'Yes' : true) &&
+    (UTRs === '' || (UTRs === 'No' ? gene.UTRs === 'No' : gene.UTRs !== 'No')) && 
+    (LongIntergenic ? gene['Long Intergenic/Intergenic/LINC'] === 'Yes' : true)
+   
+);
+
+    currentPage = 0;  // Reset current page
+    populateList();
+});
+
+// Here, this is for when the user selects 'showallcoding'
+filteredGenes = genes.filter(gene =>
+    (SenseSelect === '' || gene.Sense === SenseSelect) &&
+    (!showAllCoding || gene.Intronic || gene.Divergent || gene.Overlapping || gene.OpenReadingFrame || gene.LongIntergenic)
+    
+);
+
+
+const li = document.createElement('li');
+li.textContent = gene.symbol;
+li.style.cursor = 'pointer'; //li.style.cursor = 'pointer';: This line modifies the CSS cursor property of the <li> element, setting it to 'pointer'. This means that when a user hovers their mouse over this list item, the cursor will change to a pointer hand (typically used to indicate a clickable link or interactive element).
+
+document.getElementById('giftScoreInput').addEventListener('input', function() {
+    document.getElementById('giftScoreDisplay').textContent = this.value;
+});
+
+// This is the code for the GiftScore to allow the user to select a range of the code from in the form "X-Y"
+
+
+    var output = document.getElementById("giftScoreDisplay");
+    var input = document.getElementById("giftScoreInput");
+    
+    function updateGiftScoreDisplay() {
+        var value = input.value;
+        var rangeRegex = /^(\d+)-(\d+)$/;
+        if (rangeRegex.test(value)) {
+            var start = parseInt(RegExp.$1);
+            var end = parseInt(RegExp.$2);
+            if (start <= end && start >= 1 && end <= 37) {
+                output.innerHTML = start + "-" + end;  // Update the display with the calculated range
+            } else {
+                alert('Invalid range. Must be between 1 and 37.');
+            }
+        } else if (value.toLowerCase() === 'show all') {
+            output.innerHTML = '1-37';  // Update the display with the default range
+        } else {
+            alert('Invalid input. Must be in format "X-Y" where X and Y are numbers, or "Show all".');
+        }
+    }
+        
+    </script>
+</body>
+</html>
