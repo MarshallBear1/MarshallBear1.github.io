@@ -1,662 +1,597 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-
-    <title>Gene Search</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+    <title>lncRNA Subclasses</title>
     <style>
+        .hide {
+    display: none;
+}
 
-        /* This is the CSS, the styling of the page, do not spend too much time worrying about this section*/
-
-        /* General styling */
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
         }
-    
-        .container {
-            width: 80%;
-            margin: auto;
-            overflow: hidden;
-        }
-    
-        /* Header styling */
-        #main-header {
-            color: orange;
-            padding: 10px;
-            text-align: center;
-            background-color: white; 
-        }
-    
-        #main-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-    
-        #logo img {
-            max-width: 200px; 
-            margin-bottom: 10px;
-        }
-    
-        /* Search section styling */
 
-        #searchSection label {
-            display: block;
-            margin: 0 auto; /* center the labels */
-            width: fit-content; /* prevent labels from stretching across the screen */
-            margin-bottom: 5px;
+        h1 {
+            font-family: 'Lato', sans-serif;
         }
-    
-        #searchSection {
-            background-color: white;
-            padding: 20px;
-            margin-bottom: 10px;
-        }
-    
-        #searchSection input, #searchSection select {
-            width: 50%; 
-            height: 25px;
-            padding: 5px;
-            margin: 0 auto; /* center the input and select boxes */
-            margin-bottom: 25px; /* Increase this value for more space between elements */
-            display: block; /* this makes margin: 0 auto; effective */
-        }
-    
-        /* Submit button styling */
-        #submitBtn {
-            display: block;
-            width: 100px;
-            height: 35px;
-            background: cornflowerblue;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin: auto;
-        }
-    
-        #submitBtn:hover {
-            background: #2B547E;
-            cursor: pointer;
-        }
-    
-        /* Gene list styling */
-        #geneList {
-            background: white;
-            padding: 20px;
-            list-style: none;
-        }
-    
-        #geneList li {
-            border-bottom: #f4f4f4 solid 1px;
-            padding: 10px;
-        }
-    
-        #geneList li {
-            cursor: pointer;
-            color: black; /* or another color of your choice */
-            text-decoration: underline;
-        }
-    
-        #geneList li:hover {
-            color: darkblue; /* or another color of your choice */
-        }
-    
-        /* Tooltip styling */
-        .info {
-            color: blue;
-            cursor: help;
-            position: relative;
-        }
-    
-        .info[data-tooltip]:hover::before {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            margin-left: -50%;
-            margin-bottom: 10px;
-            padding: 7px;
-            border-radius: 5px;
-            background: #333;
-            color: #fff;
-            font-size: 12px;
-            line-height: 14px;
-            z-index: 99;
-            box-sizing: border-box;
-            width: 200px;
-            text-align: center;
-        }
-    
-        /* Collapsible button styling */
 
-        .collapsible {
-            background-color: #eee;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
+        button {
+            display: inline-block;
+            padding: .75rem .5rem;
             width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-        }
-    
-        .active, .collapsible:hover {
-            background-color: #ccc;
-        }
-    
-        .content {
-            padding: 0 18px;
-            display: none;
+            max-width: 350px;
+            border-radius: 10px;
+            color: #fff;
+            text-transform: none;
+            font-size: 1rem;
+            letter-spacing: .15rem;
+            transition: all .3s;
+            position: relative;
             overflow: hidden;
-            background-color: #f1f1f1;
+            z-index: 1;
+            outline: none;
+            background-color: #4F46E5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-    
-        /* Coding container styling */
 
-        .coding-container {
+        button:hover {
+            transform: scale(1.02);
+            background-color: #4338CA;
+        }
+
+        .container {
+            padding-top: 50px;
+            margin: 0 auto;
+            width: 100%;
             text-align: center;
-            font-size: 16px;
-            margin-bottom: 12px;
-        }
-    
-        .coding-selects, .coding-checkboxes, .coding-select-all {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 3px; /* Add some space between lines if you need */
-        }
-    
-        .coding-selects .coding-item, .coding-checkboxes .coding-item, .coding-select-all .coding-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 5px;
-            font-size: 12px;
-        }
-    
-        .coding-checkboxes .coding-item input[type="checkbox"], .coding-select-all .coding-item input[type="checkbox"] {
-            width: 12px;
-            height: 2-px;
-            margin-left: 5px;
-        }
-    
-        /* Additional container styling */
-
-        .gift-score-container {
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 12px;
-        }
-    
-        .gift-score-flex {
-            display: flex;
-            align-items: center;
-        }
-    
-        #giftScoreInput {
-            flex-grow: 1;
-            margin-right: 10px;
-            width: 100%; 
-        }
-    
-        .gift-score-flex .gift-score-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 5px;
-            font-size: 12px;
-        }
-    
-        .gift-score-flex input[type="text"] {
-            max-width: 25px;
-            margin-left: 5px;
-        }
-    
-        /* Triggs container styling */
-
-        .triggs-container {
-            text-align: center;
-            font-size: 16px;
-        }
-    
-        .triggs-checkboxes label {
-            margin: 1px;
-            font-size: 8px;
-        }
-    
-        .triggs-checkboxes input[type="checkbox"] {
-            width: 8px;
-            height: 8px;
-        }
-    
-       
-
-        .select-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 0 40px;
-            font-size: 14px;
-        }
-    
-        .select-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px;
-            box-sizing: border-box;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        #frame-image-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+
+     
+  #frame-image {
+    position: relative;
+    left: -325px;
+    top: -225px;
+    height: 200px;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+        
     </style>
-    
 
-<!-- These are effectively loading libraries, which change the functionality of the HTML/the way it looks.  -->
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet"> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<style>
+    .hidden {
+        display: none;
+    }
+
+    #backgroundTab:focus,
+    #whatIsRnaTab:focus,
+    #testNomenclatureTab:focus {
+        outline: none;
+    }
+</style>
+
+
 </head>
+
 <body>
- 
-<!-- Loading in the logo  -->
-    <header id="main-header">
-        <div id="logo">
-           <img src="data:image/png;base64,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" alt="Your Logo">
+
+    <div class="container mx-auto px-4 py-5">
+        <div class="flex flex-col items-center mb-2">
+            <img src="https://geneanalytics.genecards.org/media/81632/gc.png" alt="Logo" class="mb-4 w-48" />
+            <h5 class="text-2xl font-extrabold"> Description </h5>
+            <!-- A new container for the text with max-w-3xl and mx-auto classes -->
+            <div class="mt-2 mb-4 text-gray-800 leading-normal antialiased max-w-3xl mx-auto bg-white rounded-lg p-4 shadow-md">
+                The current count of lncRNAs stands at approximately 130,000. The conventional definition categorizes any gene of 200 nucleotides or more as an lncRNA, leading to a vast assortment of genes falling under a single classification. We aim to refine this broad definition by introducing a new nomenclature based on three key characteristics. This approach will allow a thorough understanding of an lncRNA's characteristics just from its name. By interacting with the boxes, you will see a detailed breakdown of these three categories. To verify your understanding, we also offer a quiz that tests your comprehension of this nomenclature.
+            </div>
+<br><br>
+            <h4 class="text-2xl font-extrabold">Subclasses:</h4>
         </div>
-        <h1>lncRNA Finder</h1>
-    </header>
+        <div id="categories" class="flex flex-col items-center gap-4">
+            <button onclick="showSubcategory('transcription_type')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Mode of Transcription</button>
+            <button onclick="showSubcategory('structure')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Structure</button>
+            <button onclick="showSubcategory('association_to_phenotype')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Association to Phenotype</button>
+        </div>
+    
+        <br><br>
+    
+        <div id="frame-image-container">
+            <img id="frame-image" src="frame.png" alt="Frame">
+        </div>
+    </div>
     
         
-    <!--The next HTML are the subcategory labels  -->
-        
-            <div class="coding-container">
-                <label for="coding">Coding:</label>
-                <div class="coding-selects" id="coding">
-                    <div class="coding-item">
-                        <br><br>
+<button id="backButton" onclick="showCategories()" class="bg-red-500 rounded-lg p-2 text-white w-full mt-4 hidden">Back</button>
 
-                        <label for="SenseSelect">Strand:</label>
-                        <select id="SenseSelect">
-                            <option value="">Show all</option>
-                            <option value="Sense">Sense</option>
-                            <option value="antisense">Antisense</option>
-                        </select>
-                    </div>
-                </div>
+<body>
+    
 
-                <div class="coding-checkboxes">
-                    <div class="coding-item"><span>Intronic</span><input type="checkbox" id="Intronic"></div>
-                    <div class="coding-item"><span>Divergent</span><input type="checkbox" id="Divergent"></div>
-                    <div class="coding-item"><span>Overlapping</span><input type="checkbox" id="Overlapping"></div>
-                    <div class="coding-item"><span>ORF</span><input type="checkbox" id="OpenReadingFrame"></div>
-                    <div class="coding-item"><span>Intergenic</span><input type="checkbox" id="LongIntergenic"></div>
-                </div>
+    <div id="transcription_type" class="flex flex-col items-center gap-4 hidden subcategory">
+        <button onclick="toggleDefinition('intergenic_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Intergenic - <span class="text-orange font-bold">I</span></button>
+        <p id="intergenic_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            Intergenic lncRNAs are transcribed from regions of the genome that do not overlap with protein-coding genes. They have diverse functions and play important roles in gene regulation and chromatin organization.
+            <img src="intergenic.gif" alt="Intergenic lncRNAs illustration" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('intronic_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Intronic - <span class="text-orange font-bold">II</span> </button>
+        <p id="intronic_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            Intronic lncRNAs are transcribed from intronic regions of protein-coding genes. They can regulate gene expression by interacting with chromatin and modulating transcription.
+            <img src="intronic.gif" alt="Intronic lncRNA gif" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('antisense_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Antisense - <span class="text-orange font-bold">III</span></button>
+        <p id="antisense_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            Antisense lncRNAs are transcribed from the opposite strand of protein-coding genes. They can regulate gene expression through various mechanisms, such as transcriptional interference and RNA-RNA interactions.
+            <img src="antisense.gif" alt="Antisense lncRNAs illustration" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('sense_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Sense - <span class="text-orange font-bold">IV</span></button>
+        <p id="sense_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            Sense lncRNAs are transcribed from the same strand as protein-coding genes. They can regulate gene expression at multiple levels, including transcriptional and post-transcriptional regulation.
+            <img src="sense.gif" alt="Sense lncRNAs illustration" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('sense_overlapping_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Sense Overlapping - <span class="text-orange font-bold">VI</span></button>
+        <p id="sense_overlapping_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            Sense Overlapping lncRNAs are transcribed from the same strand and overlapping regions of protein-coding genes.
+            <img src="Sense Overlapping.gif" alt="Sense Overlapping lncRNAs illustration" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('divergent_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Divergent - <span class="text-orange font-bold">VI</span> </button>
+        <p id="divergent_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            Divergent lncRNAs are transcribed in the opposite direction to a nearby protein-coding gene, from a shared promoter region. They often share regulatory elements and expression patterns with the adjacent gene.
+            <img src="divergent.gif" alt="Divergent lncRNA gif" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('3_prime_UTR_overlapping_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">3' UTR overlapping - <span class="text-orange font-bold">VII</span></button>
+        <p id="3_prime_UTR_overlapping_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            lncRNAs that overlap with the 3' untranslated region (UTR) of protein-coding genes. They can regulate mRNA stability, translation, and localization.
+            <img src="3' UTR Overlapping.gif" alt="3' UTR overlapping lncRNAs illustration" class="mx-auto mt-2">
+        </p>
+        <button onclick="toggleDefinition('5_prime_UTR_overlapping_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">5' UTR overlapping - <span class="text-orange font-bold">VIII</span></button>
+        <p id="5_prime_UTR_overlapping_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+            lncRNAs that overlap with the 5' untranslated region (UTR) of protein-coding genes. They can regulate transcription, translation, and mRNA stability.
+            <img src="5 Prime UTR Overlapping.gif" alt="5' UTR overlapping lncRNAs illustration" class="mx-auto mt-2">
+        </p>
+        <button onclick="backToCategories()" class="bg-red-500 rounded-lg p-2 text-white w-full">Back</button>
+    </div>
+    
 
-                <div class="coding-select-all">
-                    <div class="coding-item"><span>Show All Coding</span><input type="checkbox" id="showAllCoding"></div>
-                </div>
+        <div id="structure" class="flex flex-col items-center gap-4 hidden subcategory">
+            
+            <style>
+                .text-orange {
+                  color: orange;
+                }
+              </style>
+
+            <button onclick="toggleDefinition('vlincRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                vlincRNA - <span class="text-orange font-bold">vLI</span>
+            </button>
+            <p id="vlincRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Very long intergenic non-coding RNAs (vlincRNAs) are a subset of lincRNAs that are exceptionally long (> 10 kb) and often expressed at low levels. They may have unique biological functions.
+            </p>
+            
+            <button onclick="toggleDefinition('pseudogeneRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                Pseudogene - <span class="text-orange font-bold">PS</span>
+            </button>
+            <p id="pseudogeneRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Pseudogene RNAs are non-functional copies of protein-coding genes that have lost their protein-coding potential. Some pseudogene RNAs can have regulatory functions.
+            </p>
+            
+            <button onclick="toggleDefinition('circRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                circRNA - <span class="text-orange font-bold">CI</span>
+            </button>
+            <p id="circRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Circular RNAs (circRNAs) are formed by back-splicing of pre-mRNA molecules, resulting in a covalently closed loop structure. They are highly stable and have been implicated in various biological processes.
+            </p>
+            
+            <button onclick="toggleDefinition('eRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                eRNA - <span class="text-orange font-bold">E</span>
+            </button>
+            <p id="eRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Enhancer RNAs (eRNAs) are transcribed from enhancer regions of the genome. They play a role in enhancer-promoter communication and gene regulation.
+            </p>
+            
+            <button onclick="toggleDefinition('NAT_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+             <span class="text-orange font-bold">NAT</span>
+            </button>
+            <p id="NAT_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Natural antisense transcripts (NATs) are RNAs that are transcribed from the opposite strand of protein-coding genes. They can regulate gene expression through various mechanisms, such as transcriptional interference and RNA-RNA interactions.
+            </p>
+            
+            <button onclick="toggleDefinition('arcRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                arcRNA - <span class="text-orange font-bold">ARC</span>
+            </button>
+            <p id="arcRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Antisense to ribosomal RNA (arcRNA) are non-coding RNAs that are transcribed from the antisense strand of ribosomal RNA genes. They have been implicated in ribosome biogenesis and gene regulation.
+            </p>
+            
+            <button onclick="toggleDefinition('hovlincRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                hovlincRNA - <span class="text-orange font-bold">HOV</span>
+            </button>
+            <p id="hovlincRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Highly overlapping lincRNAs (hovlincRNAs) are a group of lincRNAs that show extensive overlap with protein-coding genes. They may have functional interactions with the overlapping genes.
+            </p>
+            
+            <button onclick="toggleDefinition('ceRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                ceRNA - <span class="text-orange font-bold">CE</span>
+            </button>
+            <p id="ceRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Competing endogenous RNAs (ceRNAs) are RNAs that compete for shared microRNA binding sites, thereby regulating each other's expression. They play a role in gene regulatory networks.
+            </p>
+            
+            <button onclick="toggleDefinition('cisRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                cisRNA - <span class="text-orange font-bold">CIS</span>
+            </button>
+            <p id="cisRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                cis-regulatory RNAs (cisRNAs) are RNAs that are transcribed from regions adjacent to their target genes. They can regulate gene expression in a cis-regulatory manner.
+            </p>
+            
+            <button onclick="toggleDefinition('transRNA_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                transRNA - <span class="text-orange font-bold">TRANS</span>
+            </button>
+            <p id="transRNA_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                trans-regulatory RNAs (transRNAs) are RNAs that are transcribed from regions distal to their target genes. They can regulate gene expression in a trans-regulatory manner.
+            </p>
+            
+            <button onclick="toggleDefinition('others_definition')" class="bg-blue-500 rounded-lg p-2 text-white w-full">
+                Miscellenaous - <span class="text-orange font-bold">MISC</span>
+            </button>
+            <p id="others_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center max-w-xl mx-auto">
+                Other structures of lncRNAs that do not fall into the defined categories. They have diverse functions and may represent novel classes of lncRNAs.
+            </p>
+            
+            
+                <button onclick="backToCategories()" class="bg-red-500 rounded-lg p-2 text-white w-full">Back</button>
             </div>
             
-        
-                  <div class="select-container">
-                        <div class="select-item">
-                            <label for="geneLengthSelect">Gene Length</label>
-                            <select id="geneLengthSelect">
-                                <option value="">Show all</option>
-                                <option value="200-2000">200-2000</option>
-                                <option value="2001-5000">2001-5000</option>
-                                <option value="5001-100000">5001-100000</option>
-                                <option value="100000+">100000+</option>
-                            </select>
-                        </div>
-
-                        <div class="select-item">
-                            <label for="pseudogeneSelect">Pseudogene:</label>
-                            <select id="pseudogeneSelect">
-                                <option value="">Show all</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-
-                        <div class="select-item">
-                            <label for="circRNASelect">circRNA:</label>
-                            <select id="circRNASelect">
-                                <option value="">Show all</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-
-                        <div class="select-item">
-                            <label for="triggsSelect">TRIGGS:</label>
-                            <select id="triggsSelect">
-                                <option value="">Show all</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-
-                        <div class="select-item">
-                            <label for="UTRsSelect">UTRs:</label>
-                            <select id="UTRsSelect">
-                                <option value="">Show all</option>
-                                <option value="No">No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
-                        </div>
-
-                        <div class="select-item">
-                            <label for="chromosomeInput">Chromosome</label>
-                            <input type="text" id="chromosomeInput" placeholder="Enter chromosome number here...">
-                        </div>
-
-                        <div class="select-item">
-                            <label for="peSelect">PE <span class="info" data-tooltip="Protein Existance Level. PE1>PE2>...PE5">(i)</span></label>
-                            <select id="peSelect">
-                                <option value="">Show all</option>
-                                <option value="PE1">PE1</option>
-                                <option value="PE2">PE2</option>
-                                <option value="PE3">PE3</option>
-                                <option value="PE4">PE4</option>
-                                <option value="PE5">PE5</option>
-                                <option value="N/A">N/A</option>
-                            </select>
-                        </div>
-
-                        <div class="select-item">
-                            <label for="giftScoreInput">
-                                Gift Score
-                                <span class="info" data-tooltip="The GIFtS algorithm uses the wealth of GeneCards annotations to produce scores aimed at predicting the degree of a gene's functionality. Since the degree of known functionality is correlated with the amount of research done on a particular gene or its product, we use these annotations in a scoring system aimed at inferring functionality. The deafult range GiFtS range is 1 (min)- 37 (max), but you can select your desired range and press update.">(i)</span>
-                            </label>
-                            <div class="gift-score-flex">
-                                <input type="text" id="giftScoreInput">
-                                <button onclick="updateGiftScoreDisplay()">Update</button>
-                                <output id="giftScoreDisplay" style="display: inline-block;"></output>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <section id="searchSection">
-                        <label for="searchInput">Search for phenotypes</label>
-                        <input type="text" id="searchInput" placeholder="Enter phenotype here...">
-                      
-               
-                <label for="originalSourceId">
-                  OriginalSourceId
-                <span class="info" data-tooltip="You will see the name of the source HGNC #1. The #1 is the relability score we give to the source, based on the GeneCaRNA hierarchical system">(i)</span>
-                </label>
-
-            <br><br>  <!-- This will make a space between the original source ID and the submit button -->
             
-            <button id="submitBtn">Submit</button>
-        </section>
+            <div id="association_to_phenotype" class="flex flex-col items-center gap-4 hidden subcategory">
 
-        <ul id="geneList">
-        </ul>
-        <button id="prevBtn">Previous</button>
-        <button id="nextBtn">Next</button>
+                <button onclick="showSubsubcategory('cancer_subsubcategory')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Cancer-Associated
+                    Transcripts</button>
+                <button onclick="showSubsubcategory('protein_subsubcategory')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Protein - <span class="text-orange font-bold">P</span></button>
+                <button onclick="showSubsubcategory('testis_subsubcategory')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Testis - <span class="text-orange font-bold">Tes</span></button>
+                <button onclick="showSubsubcategory('height_subsubcategory')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Height - <span class="text-orange font-bold">Hgt</span></button>
+                <button onclick="showSubsubcategory('sleep_subsubcategory')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Sleep - <span class="text-orange font-bold">Sl</span></button>
+                <button onclick="showSubsubcategory('diabetes_subsubcategory')" class="bg-blue-500 rounded-lg p-2 text-white w-full">Diabetes - <span class="text-orange font-bold">Dia</span></button>
+                <button onclick="backToCategories()" class="bg-red-500 rounded-lg p-2 text-white w-full mt-4">Back</button>
+            </div>
+            
+            <div id="cancer_subsubcategory" class="flex flex-col items-center gap-4 hidden subsubcategory">
 
-    </div>
+                <button onclick="toggleDefinition('breast_cancer_definition')" id="breast_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Breast
+                    Cancer - <span class="text-orange font-bold">BC</span></button>
+                <p id="breast_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with breast cancer...</p>
+                <button onclick="toggleDefinition('testis_cancer_definition')" id="testis_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Testis
+                    Cancer - <span class="text-orange font-bold">TC</span></button>
+                <p id="testis_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with testis cancer...</p>
+                <button onclick="toggleDefinition('lung_cancer_definition')" id="lung_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Lung
+                    Cancer - <span class="text-orange font-bold">LC</span></button>
+                <p id="lung_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with lung cancer...</p>
+                <button onclick="toggleDefinition('gastric_cancer_definition')" id="gastric_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Gastric
+                    Cancer - <span class="text-orange font-bold">GC</span></button>
+                <p id="gastric_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with gastric cancer...</p>
+                <button onclick="toggleDefinition('prostate_cancer_definition')" id="prostate_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Prostate
+                    Cancer - <span class="text-orange font-bold">PC</span></button>
+                <p id="prostate_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with prostate cancer...</p>
+                <button onclick="toggleDefinition('cervical_cancer_definition')" id="cervical_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Cervical
+                    Cancer  <span class="text-orange font-bold">CC</span></button>
+                <p id="cervical_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with cervical cancer...</p>
+                <button onclick="toggleDefinition('head_neck_cancer_definition')" id="head_neck_cancer_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Head
+                    and Neck Cancer - <span class="text-orange font-bold">HNC</span></button>
+                <p id="head_neck_cancer_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with head and neck cancer...</p>
+                <button onclick="toggleDefinition('susceptibility_definition')" id="susceptibility_button" class="bg-blue-500 rounded-lg p-2 text-white w-full">Susceptibility - <span class="text-orange font-bold">Sus</span></button>
+                <p id="susceptibility_definition" class="block rounded-lg p-2 bg-white border border-gray-300 hidden w-full text-center">Definition of lncRNAs associated with susceptibility...</p>
+                <button onclick="showCancer()" class="bg-green-500 rounded-lg p-2 text-white w-full">lncRNA Cancer WordTree</button>
+                <button onclick="backToSubcategory('association_to_phenotype')" class="bg-red-500 rounded-lg p-2 text-white w-full">Back</button>
+            </div>
 
-     <!-- The next is the JS code -->
+<div id="cancer_frame" style="display: none;">
+  <iframe src="https://www.jasondavies.com/wordtree/?source=e570d7f697c663e0cccc82d5ca6c6de7&prefix=cancer&phrase-line=1" width="100%" height="500"></iframe>
+</div>
 
-    <script>
-   
+<script>
+  function showCancer() {
+    document.getElementById('cancer_frame').style.display = 'block';
+  }
+  
+  function backToCategories() {
+    document.getElementById('categories').style.display = 'flex';
+    document.getElementById('frame-image-container').style.display = 'flex'; // Show the frame image container
+    document.getElementById('frame-image').classList.remove('hidden'); // Show the frame image
 
-        // Load the data from the JSON file, which has been coverted from the xlsx file.
-
-    fetch('http://127.0.0.1:5500/genes2.json')
-    .then(response => response.json())
-    .then(data => {
-        genes = data;
-
-        // Get a list of unique phenotypes from the JSON
-        phenotypes = [...new Set(genes.map(gene => gene['Phenotype (GWAS)'] ? gene['Phenotype (GWAS)'] : ''))];
-
-        // Initialize the autocomplete dropdown
-        $("#searchInput").autocomplete({
-            source: phenotypes,
-            select: function(event, ui) {
-                event.preventDefault();
-                $("#searchInput").val(ui.item.value);
-            }
-        });
-    });
-
-    // The next code will be for the pagination, the 'next and previous buttons'
-   
-    let genes;
-        let phenotypes = [];
-        let filteredGenes = [];
-        let currentPage = 0;
-        const itemsPerPage = 25; // This can be changed if you want more or less genes per page
-
-    // Pagination JS
-document.getElementById('prevBtn').addEventListener('click', function() {
-    if (currentPage > 0) {
-        currentPage--;
-        populateList(filteredGenes);
+    const subcategories = document.querySelectorAll('.subcategory');
+    for (let subcategory of subcategories) {
+        subcategory.style.display = 'none';
     }
+
+    const subsubcategories = document.querySelectorAll('.subsubcategory');
+    for (let subsubcategory of subsubcategories) {
+        subsubcategory.style.display = 'none';
+    }
+
+    // Hide the WordTree iframe
+    document.getElementById('cancer_frame').style.display = 'none';
+}
+
+</script>
+
+
+
+            
+            <div class="max-w-md mx-auto">
+            
+            <br><br>
+            <div class="flex justify-center items-center mb-4">
+                <p class="text-orange font-bold">Select the nomenclature for your lncRNA:</p>
+                <button onclick="showNomenclatureForm()" id="nomenclatureButton" class="bg-blue-500 rounded-lg p-2 text-white w-full mt-4 ml-4">Test Your Nomenclature</button>
+            </div>
+                
+            <div id="nomenclatureButton" class="flex flex-col items-center gap-4 hidden subcategory"></div>
+            
+                <form id="nomenclature-form" class="hide">
+                    <div class="flex justify-center mb-4">
+                        <label for="transcription-mode" class="mr-2">Transcription Mode:</label>
+                        <select id="transcription-mode">
+                            <option value="Class I">Intergenic</option>
+                            <option value="Class II">Intronic</option>
+                            <option value="Class III">Antisense</option>
+                            <option value="Class IV">Sense</option>
+                            <option value="Class V">Sense Overlapping</option>
+                            <option value="Class VI">Divergent</option>
+                            <option value="Class VII">3' UTR overlapping</option>
+                            <option value="Class VII">5' UTR overlapping</option>
+                        </select>
+                    </div>
+        
+                    <div class="flex justify-center mb-4">
+                        <label for="Structure" class="mr-2">Structure:</label>
+                        <select id="Structure">
+                            <option value="CI">circRNA</option>
+                            <option value="vLi">vlincRNA</option>
+                            <option value="HOV">HOVlincRNA</option>
+                            <option value="E">eRNA</option>
+                            <option value="ARC">arcRNA</option>
+                            <option value="NAT">NAT</option>
+                            <option value="PS">Pseudogene</option>
+                            <option value="CE">ceRNA</option>
+                            <option value="CIS">cisRNA</option>
+                            <option value="TRANS">transRNA</option>
+                            <option value="MISC">Miscellaneous</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-center mb-4">
+                        <label for="Association_to_phenotype" class="mr-2">Association to Phenotype:</label>
+                        <select id="Association_to_phenotype">
+                            <option value="P">Protein</option>
+                            <option value="Hgt">Height</option>
+                            <option value="Tes">Testis</option>
+                            <option value="Sl">Sleep</option>
+                            <option value="Dia">Diabetes</option>
+                            <option value="BC">Breast Cancer</option>
+                            <option value="GC">Gastric Cancer</option>
+                            <option value="PC">Postrate Cancer</option>
+                            <option value="CC">Cervical Cancer</option>
+                            <option value="HNC">Head and Neck Cancer</option>
+                            <option value="Sus">Cancer Susceptibility</option>
+                        </select>
+                    </div>
+        
+        
+                    <div class="flex justify-center">
+                        <input type="submit" value="Submit"
+                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    </div>
+                </form>
+        
+                <div id="outcome" class="text-center mt-8 hide">
+                    <p class="text-xl font-bold mb-4">Outcome:</p>
+                    <p id="outcome-text" class="text-lg"></p>
+                    <br><br>
+                    <br><br>
+                </div>
+
+              
+                </div>
+                
+                
+            
+            <script>
+            
+            function showNomenclatureForm() {
+    document.getElementById('nomenclature-form').classList.remove('hide');
+    document.getElementById('nomenclatureButton').style.display = 'none';
+}
+
+function showCategories() {
+    document.getElementById('categories').style.display = 'flex';
+    document.getElementById('nomenclatureButton').style.display = 'block';
+}
+
+function showSubcategory(id) {
+    // Hide all subcategories
+    const subcategories = document.querySelectorAll('.subcategory');
+    for (let subcategory of subcategories) {
+        subcategory.style.display = 'none';
+    }
+
+    // Hide main category
+    document.getElementById('categories').style.display = 'none';
+
+    // Show the selected subcategory
+    document.getElementById(id).style.display = 'flex';
+
+    // Hide the nomenclature button
+    document.getElementById('nomenclatureButton').style.display = 'none';
+}
+
+function showSubsubcategory(id) {
+    // Hide all subcategories
+    const subcategories = document.querySelectorAll('.subcategory');
+    for (let subcategory of subcategories) {
+        subcategory.style.display = 'none';
+    }
+
+    // Hide main category
+    document.getElementById('categories').style.display = 'none';
+
+    // Show subsubcategory
+    document.getElementById(id).style.display = 'flex';
+}
+
+function backToCategories() {
+    document.getElementById('categories').style.display = 'flex';
+    document.getElementById('frame-image-container').style.display = 'flex'; // Add this line
+
+document.getElementById('frame-image').classList.remove('hidden');
+
+
+
+
+    const subcategories = document.querySelectorAll('.subcategory');
+    for (let subcategory of subcategories) {
+        subcategory.style.display = 'none';
+    }
+
+    const subsubcategories = document.querySelectorAll('.subsubcategory');
+    for (let subsubcategory of subsubcategories) {
+        subsubcategory.style.display = 'none';
+    }
+    
+}
+
+function backToSubcategory(id) {
+    // Hide all subsubcategories
+    const subsubcategories = document.querySelectorAll('.subsubcategory');
+    for (let subsubcategory of subsubcategories) {
+        subsubcategory.style.display = 'none';
+    }
+
+    // Show subcategory
+    document.getElementById(id).style.display = 'flex';
+}
+
+function toggleDefinition(id) {
+    const definition = document.getElementById(id);
+    definition.classList.toggle('hidden');
+}
+
+document.getElementById('nomenclature-form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get the selected values
+    var transcriptionMode = document.getElementById('transcription-mode').value;
+    var structure = document.getElementById('Structure').value;
+    var associationToPhenotype = document.getElementById('Association_to_phenotype').value;
+
+    // Generate the outcome text
+    var outcomeText = transcriptionMode + " " + structure + " " + associationToPhenotype + " lncRNA";
+
+    // Set colors for each part of the outcome text
+    var transcriptionModeColor = "red"; // Set the color for the mode of transcription
+    var structureColor = "blue"; // Set the color for the structure
+    var associationColor = "orange"; // Set the color for the phenotype association
+
+    // Format the outcome text with colors
+    var formattedText = "<span style='color: " + transcriptionModeColor + "'>" + transcriptionMode + "</span> " +
+                        "<span style='color: " + structureColor + "'>" + structure + "</span> " +
+                        "<span style='color: " + associationColor + "'>" + associationToPhenotype + "</span> lncRNA";
+
+    // Display the outcome
+    document.getElementById('outcome').classList.remove('hide');
+    document.getElementById('outcome-text').innerHTML = formattedText;
 });
 
-document.getElementById('nextBtn').addEventListener('click', function() {
-    if ((currentPage + 1) * itemsPerPage < filteredGenes.length) {
-        currentPage++;
-        populateList(filteredGenes);
+
+function showSubcategory(id) {
+      // Hide the title and image
+
+      document.getElementById('frame-image').classList.add('hidden');
+
+      // Hide all subcategories
+      const subcategories = document.querySelectorAll('.subcategory');
+      for (let subcategory of subcategories) {
+        subcategory.style.display = 'none';
+      }
+
+      // Hide main category
+      document.getElementById('categories').style.display = 'none';
+
+      // Show the selected subcategory
+      document.getElementById(id).style.display = 'flex';
+
+      // Hide the nomenclature button
+      document.getElementById('nomenclatureButton').style.display = 'none';
     }
-});
- 
-    
-    function populateList() {
-        const geneList = document.getElementById('geneList');
-            geneList.innerHTML = '';
 
-        const start = currentPage * itemsPerPage;
-        const end = start + itemsPerPage;
-        const pageItems = filteredGenes.slice(start, end);
 
-    if (filteredGenes.length === 0) {
-        geneList.innerHTML = "<li>No results found.</li>"; // if there are no results for the users search request
-    } else {
-        for (let gene of pageItems) {
-            const li = document.createElement('li');
-            li.textContent = gene.symbol;
-            li.setAttribute('data-Sense', gene.Sense);
-            if (gene['Phenotype (GWAS)']) {
-                li.setAttribute('data-phenotype', gene['Phenotype (GWAS)'].toLowerCase()); // code to enable to user to be able to search for GWAS through a search bar
-            } else {
-                li.setAttribute('data-phenotype', '');
-            }
-            li.addEventListener('click', function() {
-                const content = this.nextElementSibling;
-                if (content.style.display === 'block') {
-                    content.style.display = 'none';
-                } else {
-                    content.style.display = 'block';
-                }
-            });
 
-            const div = document.createElement('div');
-            div.setAttribute('class', 'content');
-            div.style.background = 'rgba(255, 165, 0, 0.2)';  // The minicard output background colour which is a light orange colour
 
-            // Generate the link to GeneCarNA
-            const link = document.createElement('a');
-            link.href = `https://www.genecards.org/cgi-bin/carddisp.pl?gene=${gene.symbol}`;
-            link.textContent = `View ${gene.symbol} on GeneCaRNA`;
-            link.target = '_blank';
 
-      
-        // Create a <br> tag between each gene 
-        const br = document.createElement('br');
-        // Append the <br> tag after the div
-        geneList.append(br);
+function backToHomePage() {
+    document.getElementById('quiz-results').style.display = 'none';
+    document.getElementById('categories').style.display = 'flex';
+}
 
-   
-        //The code which takes the original source ID, and dispalys its rank
- const sourceIdToNameAndRank = {
-    2: { name: "HGNC", rank: 1 },
-    3: { name: "NCBI Gene", rank: 2 },
-    5: { name: "Ensembl", rank: 3 },
-    72: { name: "RefSeq", rank: 4 },
-    84: { name: "NONCODE", rank: 5 },
-    149: { name: "ENA", rank: 6 },
-    152: { name: "LncBook", rank: 14 },
-    153: { name: "LNCipedia", rank: 15 },
-    
+window.onload = function () {
+    const backButton = document.getElementById('backButton');
+    backButton.addEventListener('click', showCategories);
 };
 
-    const table = document.createElement('table');
-    for (let prop in gene) {
-    if (prop === 'symbol' || prop === 'Gene length') continue;  // Skip the 'symbol' and 'Gene Length' properties
 
-    const row = document.createElement('tr');  // Create a new table row
-    const headerCell = document.createElement('th');  // Create a header cell for the property name
-    const valueCell = document.createElement('td');  // Create a standard cell for the property value
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.section');
+        const tabs = document.querySelectorAll('.tab');
 
-    headerCell.textContent = prop;  // Set the text content of the header cell to the property name
-
-    let value = gene[prop];  // Get the property value
-
-    // If the property is 'UTRs', split the value at '||' and take the first item
-    if (prop === 'UTRs') {
-        value = value.split('||')[0];
-    }
-
-    // If the property is 'originalSourceId', replace it with the source name and rank
-    if (prop === 'originalSourceId') {
-        const sourceInfo = sourceIdToNameAndRank[value];
-        if (sourceInfo) {
-            value = `${sourceInfo.name} #${sourceInfo.rank}`;
-            headerCell.title = "This number refers to the rank of the source in terms of its credibility.";
+        for (let section of sections) {
+            section.classList.add('hidden');
         }
-    }
 
-    valueCell.textContent = value;  // Set the text content of the standard cell to the property value
-
-    // Set the text color based on the cell value
-    if (value === 'Yes') {
-        valueCell.style.color = 'green';
-    } else if (value === 'No') {
-        valueCell.style.color = 'red';
-    }
-
-    row.appendChild(headerCell);  // Append the header cell to the row
-    row.appendChild(valueCell);  // Append the standard cell to the row
-
-    table.appendChild(row);  // Append the row to the table
-}
-    div.appendChild(table);  // Append the table to the div 
-
-
-            
-         // Append the  GeneCaRNA link at the end
-    
-            div.appendChild(link);
-            geneList.append(li);
-            geneList.append(div);
-             
+        for (let tab of tabs) {
+            tab.classList.remove('bg-blue-700');
+            tab.classList.add('bg-blue-500');
         }
+
+        document.getElementById(sectionId + 'Section').classList.remove('hidden');
+        document.getElementById(sectionId + 'Tab').classList.remove('bg-blue-500');
+        document.getElementById(sectionId + 'Tab').classList.add('bg-blue-700');
     }
 
-    document.getElementById('prevBtn').disabled = currentPage === 0;
-    document.getElementById('nextBtn').disabled = end >= filteredGenes.length;
-}
 
-//code that allows the categories to be selected 
-//const input = ...: Gets the value of the input element with ID, and stores it in the input variable.
-        document.getElementById('submitBtn').addEventListener('click', function() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const Sense = document.getElementById('SenseSelect').value;
-    const geneLength = document.getElementById('geneLengthSelect').value;
-    const pseudogene = document.getElementById('pseudogeneSelect').value;
-    const giftScore = document.getElementById('giftScoreInput').value;
-    const circRNA = document.getElementById('circRNASelect').value;
-    const chromosome = document.getElementById('chromosomeInput').value;
-    const pe = document.getElementById('peSelect').value;
-    const triggs = document.getElementById('triggsSelect').value;
-    const UTRs = document.getElementById('UTRsSelect').value;
-
-    const Divergent = document.getElementById('Divergent').checked;
-    const Overlapping = document.getElementById('Overlapping').checked;
-    const Intronic = document.getElementById('Intronic').checked;
-    const OpenReadingFrame = document.getElementById('OpenReadingFrame').checked;
-    const LongIntergenic = document.getElementById('LongIntergenic').checked;
-    const showAllCoding = document.getElementById('showAllCoding').checked;
-
-// Then use these values to filter your JSON data.
-//notice how for UTR the code is different, and this is the case since it is saying if the code doesn't say know, assume it is YES
-//this is because the text in the JSON doesn't say YES, it just says its binding properly.
-    filteredGenes = genes.filter(gene => 
-    (gene['Phenotype (GWAS)'] && gene['Phenotype (GWAS)'].toLowerCase().includes(input)) &&
-    (Sense === '' || gene.Sense === Sense) &&
-    (geneLength === '' || gene['Gene Length'] === geneLength) &&
-    (pseudogene === '' || gene.Pseudogene === pseudogene) &&
-    (giftScore === '' || gene.giftScore === parseInt(giftScore)) &&
-    (circRNA === '' || gene.CircRNA === circRNA) &&
-    (chromosome === '' || gene.chromosome_Contigs === chromosome) &&
-    (pe === '' || gene.PE === pe) &&
-    (triggs === '' || gene.TRIGGS === triggs) &&
-    (Divergent ? gene.Divergent === 'Yes' : true) &&
-    (Overlapping ? gene.Overlapping === 'Yes' : true) &&
-    (Intronic ? gene.Intronic === 'Yes' : true) &&
-    (OpenReadingFrame ? gene['Open reading frame'] === 'Yes' : true) &&
-    (UTRs === '' || (UTRs === 'No' ? gene.UTRs === 'No' : gene.UTRs !== 'No')) && 
-    (LongIntergenic ? gene['Long Intergenic/Intergenic/LINC'] === 'Yes' : true)
-   
-);
-
-    currentPage = 0;  // Reset current page
-    populateList();
-});
-
-// Here, this is for when the user selects 'showallcoding'
-filteredGenes = genes.filter(gene =>
-    (SenseSelect === '' || gene.Sense === SenseSelect) &&
-    (!showAllCoding || gene.Intronic || gene.Divergent || gene.Overlapping || gene.OpenReadingFrame || gene.LongIntergenic)
     
-);
+                </script>
 
+                <style>
+    /* Existing CSS styles */
 
-const li = document.createElement('li');
-li.textContent = gene.symbol;
-li.style.cursor = 'pointer'; //li.style.cursor = 'pointer';: This line modifies the CSS cursor property of the <li> element, setting it to 'pointer'. This means that when a user hovers their mouse over this list item, the cursor will change to a pointer hand (typically used to indicate a clickable link or interactive element).
-
-document.getElementById('giftScoreInput').addEventListener('input', function() {
-    document.getElementById('giftScoreDisplay').textContent = this.value;
-});
-
-// This is the code for the GiftScore to allow the user to select a range of the code from in the form "X-Y"
-
-
-    var output = document.getElementById("giftScoreDisplay");
-    var input = document.getElementById("giftScoreInput");
-    
-    function updateGiftScoreDisplay() {
-        var value = input.value;
-        var rangeRegex = /^(\d+)-(\d+)$/;
-        if (rangeRegex.test(value)) {
-            var start = parseInt(RegExp.$1);
-            var end = parseInt(RegExp.$2);
-            if (start <= end && start >= 1 && end <= 37) {
-                output.innerHTML = start + "-" + end;  // Update the display with the calculated range
-            } else {
-                alert('Invalid range. Must be between 1 and 37.');
-            }
-        } else if (value.toLowerCase() === 'show all') {
-            output.innerHTML = '1-37';  // Update the display with the default range
-        } else {
-            alert('Invalid input. Must be in format "X-Y" where X and Y are numbers, or "Show all".');
-        }
+    /* Update the background color for the buttons */
+    .bg-blue-500 {
+        background-color: #2462a4; /* Replace with your desired darker shade of blue */
     }
-        
-    </script>
+
+    /* Update the background color for the active tab */
+    .bg-blue-700 {
+        background-color: #000000; /* Replace with your desired darker shade of blue */
+    }
+</style>
+
+
+                
 </body>
+
 </html>
